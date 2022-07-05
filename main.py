@@ -4,7 +4,6 @@ from commands.main import parse_command
 from multiprocessing import Process
 from workers.main import workers_process
 from aiogram import Bot, Dispatcher, executor, types
-from db import Db
 
 config = dotenv_values(".env")
 

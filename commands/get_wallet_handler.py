@@ -1,9 +1,9 @@
-from aiogram import types
-from db import Db
+from lib.db import Db
 from response_formatters.wallet import wallet_formatter
+from lib.MessageEvent import MessageEvent
 
 
-async def handler(message: types.Message):
-    wallet = Db().get_wallet(user_id=message.chat.id)
+async def handler(event: MessageEvent):
+    wallet = Db().get_wallet(user_id=event.message.chat.id)
 
-    await message.answer(wallet_formatter(wallet))
+    await event.message.answer(wallet_formatter(wallet))

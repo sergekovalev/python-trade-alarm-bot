@@ -1,24 +1,15 @@
 import logging
-import requests
-from dotenv import dotenv_values
-from db import Db
-import asyncio
-from time import sleep
-
-config = dotenv_values(".env")
-
-headers = {'X-CMC_PRO_API_KEY': config['COINMARKETCAP_TOKEN']}
+from lib.db import Db
+from lib.api import Api
 
 
 def worker():
     print('WORKER::fetch_quotes')
     logging.info('WORKER::fetch_quotes')
 
-    r = requests.get(config['FETCH_QUOTES_URL'], headers=headers)
+    quotes = Api.fetch_quotes()
 
-    data = r.json()['data']
-
-    Db().set_quotes(data)
+    Db().set_quotes(quotes)
 
     check_users_stats()
     

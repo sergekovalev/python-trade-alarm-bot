@@ -7,7 +7,9 @@ from commands.add_wallet_handler import handler as add_wallet_handler
 from commands.delete_wallet_handler import handler as delete_wallet_handler
 from commands.follow_currency_handler import handler as follow_currency_handler
 from aiogram import types
+from lib.MessageEvent import MessageEvent
 import re
+
 
 cmds = {
     r'/start': start_handler,
@@ -19,13 +21,29 @@ cmds = {
     r'/delete_wallet': delete_wallet_handler,
     r'delete .+ wallet': delete_wallet_handler,
     r'/quotes': get_quotes_handler,
+    r'follow .+': follow_currency_handler,
     r'/follow': follow_currency_handler,
-    r'/unfollow': follow_currency_handler
+    r'unfollow .+': follow_currency_handler,
+    r'/unfollow': follow_currency_handler,
 }
 
 
 async def parse_command(message: types.Message):
-    for p, handler in cmds.items():
-        if re.match(p, message.text):
-            await handler(message)
+    try:
+        event = MessageEvent(message)
+        
+        print('>>>', event.context.payload)
+
+        if event.contains_context():
+            await globals()[event.context.root['name']](event)
             return
+
+        for p, handler in cmds.items():
+            if re.match(p, message.text):
+                await handler(event)
+                return
+    
+        await message.answer('Sorry, I cannot recognize your request')
+        await message.answer('try /help command')
+    except Exception as err:
+        print(err)

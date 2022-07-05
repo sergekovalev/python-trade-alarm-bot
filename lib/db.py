@@ -26,7 +26,18 @@ class Db(object):
         
     def get_user(self, user_id):
         return self.__db.users.find_one({'id': user_id})
+
+    def get_user_context(self, user_id):
+        user = self.get_user(user_id)
         
+        if user is None:
+            return None
+
+        return user['context'] if 'context' in user.keys() else None
+    
+    def set_user_context(self, user_id, context):
+        self.__db.users.update_one({'id': user_id}, {'$set': {'context': context}})
+
     def set_quotes(self, data):
         self.__db.quotes.delete_many({})
         self.__db.quotes.insert_many(data)

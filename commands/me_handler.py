@@ -1,10 +1,10 @@
-from aiogram import types
-from db import Db
+from lib.db import Db
 from response_formatters.me import me_formatter
+from lib.MessageEvent import MessageEvent
 
 
-async def handler(message: types.Message):
-    me = Db().get_user(message.chat.id)
-    me['name'] = f'{message.chat.first_name} {message.chat.last_name}'
+async def handler(event: MessageEvent):
+    me = Db().get_user(event.message.chat.id)
+    me['name'] = f'{event.message.chat.first_name} {event.message.chat.last_name}'
 
-    await message.answer(me_formatter(me))
+    await event.message.answer(me_formatter(me))

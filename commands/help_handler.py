@@ -1,5 +1,6 @@
 from aiogram import types
+from lib.MessageEvent import MessageEvent
 
 
-async def handler(message: types.Message):
-    await message.answer('help')
+async def handler(event: MessageEvent):
+    await event.message.answer('help')
