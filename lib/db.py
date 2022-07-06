@@ -37,6 +37,28 @@ class Db(object):
     
     def set_user_context(self, user_id, context):
         self.__db.users.update_one({'id': user_id}, {'$set': {'context': context}})
+        
+    def follow_ticker(self, user_id, ticker: str):
+        user = self.get_user(user_id)
+        
+        tickers = user['follow'] if 'follow' in user.keys() else []
+        
+        tickers.append(ticker)
+        
+        tickers = list(set(tickers))
+
+        self.__db.users.update_one({'id': user_id}, {'$set': {'follow': tickers}})
+
+    def unfollow_ticker(self, user_id, ticker: str):
+        user = self.get_user(user_id)
+        
+        tickers = user['follow'] if 'follow' in user.keys() else []
+        
+        tickers = [t for t in tickers if t != ticker]
+        
+        self.__db.users.update_one({'id': user_id}, {'$set': {'follow': tickers}})
+        
+        return tickers
 
     def set_quotes(self, data):
         self.__db.quotes.delete_many({})

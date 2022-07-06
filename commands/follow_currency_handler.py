@@ -4,7 +4,7 @@ from lib.db import Db
 
 
 async def initial(event: MessageEvent):
-    m = re.search('follow (.+)$', event.message.text)
+    m = re.search('/?follow (.+)$', event.message.text)
 
     event.message.text = m.group(1)
     
@@ -18,7 +18,7 @@ async def select_currency(event: MessageEvent):
 async def final(event: MessageEvent):
     Db().follow_ticker(user_id=event.user_id, ticker=event.message.text)
     
-    await event.message.answer(event.message.text)
+    await event.message.answer(f'Now you\'re following {event.message.text}')
     
     event.context.clear_context()
 
@@ -33,15 +33,17 @@ async def handler(event: MessageEvent):
     if event.contains_context():
         return await globals()[event.context.step['name']](event)
 
-    if re.match(r'follow (.+)$', event.message.text):
+    if re.match(r'/?follow .+$', event.message.text):
         context = contexts['initial']
     else:
         event.context.set_context({
             'root': {
                 'name': 'follow_currency_handler',
+                'payload': {}
             },
             'step': {
-                'name': 'final'
+                'name': 'final',
+                'payload': {}
             }
         })
 

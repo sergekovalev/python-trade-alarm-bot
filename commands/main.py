@@ -6,6 +6,7 @@ from commands.get_wallet_handler import handler as get_wallet_handler
 from commands.add_wallet_handler import handler as add_wallet_handler
 from commands.delete_wallet_handler import handler as delete_wallet_handler
 from commands.follow_currency_handler import handler as follow_currency_handler
+from commands.unfollow_currency_handler import handler as unfollow_currency_handler
 from aiogram import types
 from lib.MessageEvent import MessageEvent
 import re
@@ -21,10 +22,10 @@ cmds = {
     r'/delete_wallet': delete_wallet_handler,
     r'delete .+ wallet': delete_wallet_handler,
     r'/quotes': get_quotes_handler,
+    r'unfollow .+': unfollow_currency_handler,
+    r'/unfollow': unfollow_currency_handler,
     r'follow .+': follow_currency_handler,
     r'/follow': follow_currency_handler,
-    r'unfollow .+': follow_currency_handler,
-    r'/unfollow': follow_currency_handler,
 }
 
 
@@ -32,11 +33,17 @@ async def parse_command(message: types.Message):
     try:
         event = MessageEvent(message)
         
-        print('>>>', event.context.payload)
+        if 'cancel' in event.message.text:
+            event.context.clear_context()
+            await message.answer('Action is cancelled')
+            return
 
         if event.contains_context():
-            await globals()[event.context.root['name']](event)
-            return
+            if not event.message.text.startswith('/'):
+                await globals()[event.context.root['name']](event)
+                return
+            else:
+                event.context.clear_context()
 
         for p, handler in cmds.items():
             if re.match(p, message.text):

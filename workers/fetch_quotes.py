@@ -7,9 +7,9 @@ def worker():
     print('WORKER::fetch_quotes')
     logging.info('WORKER::fetch_quotes')
 
-    quotes = Api.fetch_quotes()
-
-    Db().set_quotes(quotes)
+    # quotes = Api.fetch_quotes()
+    #
+    # Db().set_quotes(quotes)
 
     check_users_stats()
     
