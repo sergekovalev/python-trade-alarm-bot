@@ -2,7 +2,7 @@ import logging
 from lib.db import Db
 from lib.math_operators import get_comparator
 from lib.api import Api
-from lib.math_operators import get_human_readable_operator
+from response_formatters.notification import new_notification_formatter
 
 
 async def worker(bot):
@@ -34,6 +34,7 @@ async def check_users_notifications(bot):
                 compare_price = float(n['price'])
 
                 if comparator(symbol_price, compare_price):
-                    message = f'Knock-Knock! {n["symbol"].upper()} {get_human_readable_operator(n["operator"])} {n["price"]} USD'
+                    message = new_notification_formatter(n)
 
                     await bot.send_message(user['id'], message)
+                    logging.info(f'User {user["id"]} is notified')

@@ -6,5 +6,5 @@ async def workers_process(bot):
     while True:
         await fetch_quotes(bot)
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(60 * 60)
 
