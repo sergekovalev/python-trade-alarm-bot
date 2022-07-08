@@ -20,6 +20,8 @@ async def check_users_notifications(bot):
     logging.info('WORKER::check_users_notifications')
     
     users = Db().get_users()
+    users = [u for u in users if 'notifications' in u.keys()]
+
     prices = {}
     quotes = Db().get_quotes()
     
@@ -27,14 +29,13 @@ async def check_users_notifications(bot):
         prices[q['symbol'].lower()] = q["quote"]["USD"]["price"]
     
     for user in users:
-        if 'notifications' in user.keys():
-            for n in user['notifications']:
-                comparator = get_comparator(n['operator'])
-                symbol_price = float(prices[n['symbol']])
-                compare_price = float(n['price'])
+        for n in user['notifications']:
+            comparator = get_comparator(n['operator'])
+            symbol_price = float(prices[n['symbol']])
+            compare_price = float(n['price'])
 
-                if comparator(symbol_price, compare_price):
-                    message = new_notification_formatter(n)
+            if comparator(symbol_price, compare_price):
+                message = new_notification_formatter(n)
 
-                    await bot.send_message(user['id'], message)
-                    logging.info(f'User {user["id"]} is notified')
+                await bot.send_message(user['id'], message)
+                logging.info(f'User {user["id"]} is notified')
