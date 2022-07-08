@@ -10,9 +10,8 @@ class Db(object):
     def __init__(self):
         client = pymongo.MongoClient("localhost", 27017)
         self.__db = client.tradebot
-        
-    @staticmethod
-    def objectify(collection, entity):
+    
+    def objectify(self, collection, entity):
         return [entity(_) for _ in collection]
         
     def user_exists(self, user_id: str) -> bool:
@@ -24,15 +23,15 @@ class Db(object):
         existing_user = self.__db.users.find_one({'id': user.id})
 
         if existing_user is None:
-            self.__db.users.insert_one(user.raw_data)
+            self.__db.users.insert_one(user.schema)
     
     def get_users(self) -> [UserEntity]:
-        return Db.objectify(self.__db.users.find(), UserEntity)
+        return self.objectify(self.__db.users.find(), UserEntity)
         
     def get_user(self, user_id: str) -> UserEntity:
         user = self.__db.users.find_one({'id': user_id})
         
-        return Db.objectify([user], UserEntity)[0]
+        return self.objectify([user], UserEntity)[0]
 
     def get_user_context(self, user_id: str):
         user = self.get_user(user_id)
@@ -40,7 +39,7 @@ class Db(object):
         if user is None:
             return None
 
-        return user['context'] if 'context' in user.keys() else None
+        return user['context'] if 'context' in user.schema.keys() else None
     
     def set_user_context(self, user_id: str, context):
         self.__db.users.update_one({'id': user_id}, {'$set': {'context': context}})
@@ -78,15 +77,15 @@ class Db(object):
         return self.get_user(user_id)['wallet']
     
     def update_wallet(self, user_id: str, data):
-        wallet = self.get_wallet(user_id)
-
-        self.__db.users.update_one({'id': user_id}, {'$set': {'wallet': {**wallet, **data}}})
+        user: UserEntity = self.get_user(user_id)
         
+        user.wallet = {**user.wallet, **data}
+        
+        user.save()
+
     def add_notification_to_user(self, user_id: str, notification):
         user = self.get_user(user_id)
         
-        notifications = user['notifications'] if 'notifications' in user.keys() else []
-
-        notifications.append(notification)
+        user.notifications.append(notification)
         
-        self.__db.users.update_one({'id': user_id}, {'$set': {'notifications': notifications}})
+        user.save()

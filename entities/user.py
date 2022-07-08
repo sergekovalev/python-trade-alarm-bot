@@ -1,32 +1,43 @@
-from entities.user_notification import UserNotificationEntity
 from entities.entity import Entity
 
 
 class UserEntity(Entity):
-    __notifications = None
+    __name = None
     
     @property
-    def id(self):
-        return self.__data['id']
-    
+    def name(self):
+        return self.__name
+   
+    @name.setter
+    def name(self, value: str):
+        self.__name = value
+
     @property
     def wallet(self):
-        return self.__data['wallet'] if 'wallet' in self.__data.keys() else None
+        return self.schema['wallet'] if 'wallet' in self.schema.keys() else None
+    
+    @wallet.setter
+    def wallet(self, value):
+        self.schema['wallet'] = value
+
+    @property
+    def follow(self):
+        return self.schema['follow'] if 'follow' in self.schema.keys() else []
+
+    @follow.setter
+    def follow(self, value):
+        follow = self.follow
+        follow.append(value)
+        
+        self.schema['follow'] = follow
     
     @property
     def notifications(self):
-        return self.__notifications
+        return self.schema['notifications'] if 'notifications' in self.schema.keys() else []
 
     @property
     def dashboard(self):
-        return self.__data['follow'] if 'follow' in self.__data.keys() else []
-    
-    @property
-    def raw_data(self):
-        return self.__data
+        return self.schema['follow'] if 'follow' in self.schema.keys() else []
 
     def __init__(self, data):
-        super(data)
-        
-        notifications = data['notifications'] if 'notifications' in data.keys() else []
-        self.__notifications = [UserNotificationEntity(n) for n in notifications]
+        super().__init__('users', data)

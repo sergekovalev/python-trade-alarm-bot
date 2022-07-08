@@ -1,7 +1,8 @@
 from response_formatters.wallet import wallet_formatter
+from entities.user import UserEntity
 
 
-def notifications(notifications):
+def notifications_formatter(notifications):
     if notifications is None:
         return 'Nothing here'
     
@@ -14,10 +15,10 @@ def notifications(notifications):
     return message
 
 
-def me_formatter(data):
+def me_formatter(user: UserEntity):
     return f'''
-Name: {data['name']}
-Wallet: {wallet_formatter(data['wallet'])}
-Following: {', '.join(data['follow']) if 'follow' in data.keys() and len(data['follow']) else 'nothing'}
-Notifications: {notifications(data['notifications'] if 'notifications' in data.keys() else None)}
+Name: {user.name}
+Wallet: {wallet_formatter(user.wallet)}
+Following: {', '.join(user.follow) if len(user.follow) else 'nothing'}
+Notifications: {notifications_formatter(user.notifications)}
     '''
