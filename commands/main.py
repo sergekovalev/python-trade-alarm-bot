@@ -7,6 +7,7 @@ from commands.add_wallet_handler import handler as add_wallet_handler
 from commands.delete_wallet_handler import handler as delete_wallet_handler
 from commands.follow_currency_handler import handler as follow_currency_handler
 from commands.unfollow_currency_handler import handler as unfollow_currency_handler
+from commands.notify_handler import handler as notify_handler
 from aiogram import types
 from lib.MessageEvent import MessageEvent
 import re
@@ -18,14 +19,13 @@ cmds = {
     r'/me': me_handler,
     r'/wallet': get_wallet_handler,
     r'/add_wallet': add_wallet_handler,
-    r'add .+ wallet': add_wallet_handler,
+    r'add (.+) wallet': add_wallet_handler,
     r'/delete_wallet': delete_wallet_handler,
-    r'delete .+ wallet': delete_wallet_handler,
+    r'delete (.+) wallet': delete_wallet_handler,
     r'/quotes': get_quotes_handler,
-    r'unfollow .+': unfollow_currency_handler,
-    r'/unfollow': unfollow_currency_handler,
-    r'follow .+': follow_currency_handler,
-    r'/follow': follow_currency_handler,
+    r'/?unfollow.*': unfollow_currency_handler,
+    r'/?follow.+': follow_currency_handler,
+    r'/?notify if (.+)': notify_handler
 }
 
 

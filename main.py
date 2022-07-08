@@ -4,6 +4,7 @@ from commands.main import parse_command
 from multiprocessing import Process
 from workers.main import workers_process
 from aiogram import Bot, Dispatcher, executor, types
+import asyncio
 
 config = dotenv_values(".env")
 
@@ -28,9 +29,8 @@ async def start(message: types.Message):
         print(err)
 
 if __name__ == '__main__':
-    wp = Process(target=workers_process)
-    wp.start()
-    
     print('Bot is started')
+    # asyncio.run(workers_process(bot))
+    asyncio.ensure_future(workers_process(bot))
     executor.start_polling(dp, skip_updates=True)
 

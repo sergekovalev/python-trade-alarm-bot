@@ -1,6 +1,7 @@
 import re
 from lib.MessageEvent import MessageEvent
 from lib.db import Db
+from response_formatters.follow import select_currency_formatter, final_formatter
 
 
 async def initial(event: MessageEvent):
@@ -12,13 +13,13 @@ async def initial(event: MessageEvent):
 
 
 async def select_currency(event: MessageEvent):
-    await event.message.answer('What currency would you like to follow?')
+    await event.message.answer(select_currency_formatter())
 
 
 async def final(event: MessageEvent):
     Db().follow_ticker(user_id=event.user_id, ticker=event.message.text)
     
-    await event.message.answer(f'Now you\'re following {event.message.text}')
+    await event.message.answer(final_formatter(event.message.text))
     
     event.context.clear_context()
 
@@ -48,5 +49,5 @@ async def handler(event: MessageEvent):
         })
 
         context = contexts['select_currency']
-        
+
     await context(event)

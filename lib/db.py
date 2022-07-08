@@ -73,4 +73,13 @@ class Db(object):
     def update_wallet(self, user_id, data):
         wallet = self.get_wallet(user_id)
 
-        self.__db.wallets.update_one({'user_id': user_id}, {**wallet, **data})
+        self.__db.users.update_one({'id': user_id}, {'$set': {'wallet': {**wallet, **data}}})
+        
+    def add_notification_to_user(self, user_id: str, notification):
+        user = self.get_user(user_id)
+        
+        notifications = user['notifications'] if 'notifications' in user.keys() else []
+
+        notifications.append(notification)
+        
+        self.__db.users.update_one({'id': user_id}, {'$set': {'notifications': notifications}})
