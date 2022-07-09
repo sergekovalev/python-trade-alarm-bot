@@ -15,10 +15,6 @@ class UserEntity(Entity):
     @property
     def wallet(self):
         return self.schema['wallet'] if 'wallet' in self.schema.keys() else None
-    
-    @wallet.setter
-    def wallet(self, value):
-        self.schema['wallet'] = value
 
     @property
     def follow(self):
@@ -41,3 +37,14 @@ class UserEntity(Entity):
 
     def __init__(self, data):
         super().__init__('users', data)
+
+    def add_to_wallet(self, symbol: str, address: str):
+        if 'wallet' not in self.schema.keys() or self.schema['wallet'] is None:
+            self.schema['wallet'] = []
+
+        self.schema['wallet'].append({
+            'symbol': symbol,
+            'address': address
+        })
+
+        self.save()

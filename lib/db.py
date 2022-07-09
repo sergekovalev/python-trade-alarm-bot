@@ -7,6 +7,10 @@ from entities.user import UserEntity
 class Db(object):
     __db = None
     
+    @property
+    def connection(self):
+        return self.__db
+    
     def __init__(self):
         client = pymongo.MongoClient("localhost", 27017)
         self.__db = client.tradebot
@@ -30,6 +34,9 @@ class Db(object):
         
     def get_user(self, user_id: str) -> UserEntity:
         user = self.__db.users.find_one({'id': user_id})
+        
+        if user is None:
+            return None
         
         return self.objectify([user], UserEntity)[0]
 
@@ -74,14 +81,7 @@ class Db(object):
         return self.__db.quotes.find()
     
     def get_wallet(self, user_id: str):
-        return self.get_user(user_id)['wallet']
-    
-    def update_wallet(self, user_id: str, data):
-        user: UserEntity = self.get_user(user_id)
-        
-        user.wallet = {**user.wallet, **data}
-        
-        user.save()
+        return self.get_user(user_id).wallet
 
     def add_notification_to_user(self, user_id: str, notification):
         user = self.get_user(user_id)

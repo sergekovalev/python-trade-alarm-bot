@@ -12,15 +12,14 @@ from aiogram import types
 from lib.MessageEvent import MessageEvent
 import re
 
-
 cmds = {
     r'/start': start_handler,
     r'/help': help_handler,
     r'/me': me_handler,
     r'/wallet': get_wallet_handler,
-    r'/add_wallet': add_wallet_handler,
-    r'add (.+) wallet': add_wallet_handler,
-    r'/delete_wallet': delete_wallet_handler,
+    r'/wallet add (.+)': add_wallet_handler,
+    r'wallet add (.+)': add_wallet_handler,
+    r'/delete (.+) wallet': delete_wallet_handler,
     r'delete (.+) wallet': delete_wallet_handler,
     r'/quotes': get_quotes_handler,
     r'/?unfollow.*': unfollow_currency_handler,
@@ -32,7 +31,7 @@ cmds = {
 async def parse_command(message: types.Message):
     try:
         event = MessageEvent(message)
-        
+
         if 'cancel' in event.message.text:
             event.context.clear_context()
             await message.answer('Action is cancelled')
@@ -42,8 +41,8 @@ async def parse_command(message: types.Message):
             if not event.message.text.startswith('/'):
                 await globals()[event.context.root['name']](event)
                 return
-            else:
-                event.context.clear_context()
+            
+            event.context.clear_context()
 
         for p, handler in cmds.items():
             if re.match(p, message.text):
